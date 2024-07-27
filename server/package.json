@@ -3,24 +3,24 @@
   "version": "1.0.0",
   "main": "index.js",
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "LeVente Berry Jr.",
+  "license": "MIT",
+  "type": "module",
   "description": "",
   "scripts": {
     "start": "node server.js",
-    "seed": "node seeds/seed.js",
-    "watch": "nodemon server.js"
+    "seed": "node seed/seed.js",
+    "watch": "nodemon server.js",
+    "test": "jest"
   },
   "dependencies": {
-    "@apollo/server": "^4.7.1",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.17.2",
-    "graphql": "^16.9.0",
-    "graphql-tag": "^2.12.6",
+    "jest": "^29.7.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.0.2",
+    "mysql2": "^3.10.3",
     "sequelize": "^6.37.3",
     "socket.io": "^4.7.5"
   },

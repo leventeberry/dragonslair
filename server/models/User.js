@@ -1,8 +1,12 @@
-import { Model , DataTypes } from 'sequelize';
-import sequelize from '../config/connect';
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../config/connect.js';
 import bcrypt from 'bcrypt';
 
-class User extends Model{}
+class User extends Model {
+  checkPassword(loginPw) {
+    return bcrypt.compareSync(loginPw, this.password);
+  }
+}
 
 User.init({
   id: {
@@ -17,9 +21,9 @@ User.init({
     allowNull: false,
     unique: true,
     validate: {
-      len: [6, 30],
-      notEmpty: true
-  }
+      len: [4, 20],
+      notEmpty: true,
+    }
   },
   email: {
     type: DataTypes.STRING,
@@ -27,7 +31,7 @@ User.init({
     unique: true,
     validate: {
       isEmail: true
-  }
+    }
   },
   password: {
     type: DataTypes.STRING,
@@ -35,32 +39,54 @@ User.init({
     validate: {
       len: [8, 40],
       notEmpty: true
+    }
   }
-  }
-},{
+}, {
   hooks: {
     beforeCreate: async (newUserData) => {
-      newUserData.email = await newUserData.email.toLowerCase();
-      newUserData.username = await newUserData.username.toLowerCase();
-      const salt = bcrypt.genSalt(10);
-      newUserData.password = bcrypt.hash(newUserData.password, salt);
-      return newUserData;
+      try {
+        newUserData.email = await newUserData.email.toLowerCase();
+        const salt = await bcrypt.genSalt(10);
+        newUserData.password = await bcrypt.hash(newUserData.password, salt);
+        return newUserData;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
     },
     beforeUpdate: async (updatedUserData) => {
-      updatedUserData.email = await updatedUserData.email.toLowerCase();
-      updatedUserData.username = await updatedUserData.username.toLowerCase();
-      if (updatedUserData.changed('password')) {
-        const salt = bcrypt.genSalt(10);
-        updatedUserData.password = bcrypt.hash(updatedUserData.password, salt);
+      try {
+        updatedUserData.email = await updatedUserData.email.toLowerCase();
+        if (updatedUserData.changed('password')) {
+          const salt = await bcrypt.genSalt(10);
+          updatedUserData.password = await bcrypt.hash(updatedUserData.password, salt);
+        }
+        return updatedUserData;
+      } catch (error) {
+        console.error(error)
+        throw error;
       }
-      return updatedUserData;
+
     },
+    beforeBulkCreate: async (newGroupData) => {
+      try {
+        for (let user of newGroupData) {
+          user.email = await user.email.toLowerCase();
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(user.password, salt);
+        }
+        return newGroupData;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
   },
-  sequelize, 
-  modelName: 'user',
+  sequelize,
+  modelName: 'users',
   freezeTableName: true,
   underscored: true,
   timestamps: false,
 });
 
-export default {User}
+export default User;

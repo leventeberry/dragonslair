@@ -2,12 +2,12 @@
   "name": "dragonslair",
   "version": "1.0.0",
   "description": "A place where dragons come together.",
+  "type": "module",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "jsonwebtoken": "^9.0.2",
-    "react-toastify": "^10.0.5"
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
@@ -21,6 +21,6 @@
     "build": "cd client && npm run build"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "LeVente Berry Jr.",
+  "license": "MIT"
 }

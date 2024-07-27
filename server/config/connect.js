@@ -12,4 +12,5 @@ const sqlDB = () => {
 
 const sequelize = new Sequelize(sqlDB());
 
+
 export default sequelize;

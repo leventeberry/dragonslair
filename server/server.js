@@ -1,24 +1,22 @@
 import express from 'express';
-import { expressMiddleware } from '@apollo/server/express4'
-import http from 'http';
+import {createServer} from 'http';
 import cors from 'cors';
 import path from 'path';
-import db from './config/connect.js';
-import seedData from './seeders/seed.js';
+import seedData from './seed/seed.js';
 import { Server } from 'socket.io';
-import 'dotenv/config';
+import 'dotenv/config'
+import testConnection from './config/testConnect.js';
+import sequelize from './config/connect.js';
+import routes from './routes/index.js';
 
 //set port number
 const PORT = process.env.PORT || 3002;
 
 // Required logic for integrating with Express
 const app = express();
+const httpServer = createServer(app);
 
-// Our httpServer handles incoming requests to our Express app.
-// Below, we tell Apollo Server to "drain" this httpServer,
-// enabling our servers to shut down gracefully.
-const httpServer = http.createServer(app);
-
+/* SOCKET.IO CONNECTION SETUP */
 const io = new Server(httpServer, {
   cors: {
     origin: ["http://localhost:5173"]
@@ -30,34 +28,42 @@ io.on("connection", (socket) => {
 });
 
 
-db.on('open', async () => {
+const startServer = async () => {
   try {
+    app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
-
-    app.use(
-      '/graphql',
-      cors(),
-      express.json(),
-      expressMiddleware(server, { context: async ({ req }) => ({ token: req.headers.token }) })
-    );
+    app.use(cors());
+    app.use(routes);
 
     if (process.env.NODE_ENV === 'production') {
-      console.log("Deployment Status: Production")
+      console.log("Deployment Status: Production");
       app.use(express.static(path.join(__dirname, '../client/dist')));
 
       app.get('*', (req, res) => {
         res.sendFile(path.join(__dirname, '../client/dist/index.html'));
       });
 
-      await new Promise((resolve) => httpServer.listen({ port: PORT }, resolve));
+      await sequelize.sync({ force: true });
+      httpServer.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+      });
     } else {
-      //seed the database with base data
+      console.log("Deployment Status:: Development");
+      console.log("Status:: Attemting Database Connection \n");
+      await testConnection();
+      console.log("\nStatus:: Starting Database Sync\n");
+      await sequelize.sync({ force: true });
+      console.log("Status:: Database Synced");
       await seedData();
-      console.log("Deployment Status: Develompent");
-      await new Promise((resolve) => httpServer.listen({ port: PORT }, resolve));
-      console.log(`Server running on http://localhost:${PORT}/`);
+      console.log("\nStatus:: Starting Server")
+      httpServer.listen(PORT, () => {
+        console.log(`Status:: Server is running on port ${PORT}`);
+      });
     }
   } catch (error) {
     console.error('Server failed to start:', error);
+    process.exit(1); // Exit the process with a failure code
   }
-});
+};
+
+startServer();
