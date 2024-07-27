@@ -3,8 +3,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/index.js';
 const routes = express.Router();
 
-
-routes.use('/register', async (req, res) => {
+routes.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
 
     try {
@@ -21,14 +20,14 @@ routes.use('/register', async (req, res) => {
 });
 
 
-routes.use('/login', async (req, res) => {
+routes.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
         const user = await User.findOne({ where: { email: email } });
 
         if (!user) {
-            res.status(500).json({ message: "Username or Password Incorrect!" });
+            res.status(401).json({ message: "Username or Password Incorrect!" });
         }
 
         const isPasswordValid = await user.checkPassword(password);
