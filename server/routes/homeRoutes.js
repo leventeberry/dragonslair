@@ -9,7 +9,8 @@ routes.post('/register', async (req, res) => {
     try {
         if (username && email && password) {
             const user = await User.create({username: username, email: email, password: password});
-            const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            console.log(user)
+            const token = jwt.sign({ id: user.id, email: user.email, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
             res.json({ token });
         } else {
             res.status(403).json({message: "Please complete all fields before submitting"});

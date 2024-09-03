@@ -36,7 +36,7 @@ const startServer = async () => {
     app.use(routes);
 
     if (process.env.NODE_ENV === 'production') {
-      console.log("Deployment Status: Production");
+      console.log("Deployment Status:: Production");
       app.use(express.static(path.join(__dirname, '../client/dist')));
 
       app.get('*', (req, res) => {
@@ -50,11 +50,15 @@ const startServer = async () => {
     } else {
       console.log("Deployment Status:: Development");
       console.log("Status:: Attemting Database Connection \n");
-      await testConnection();
-      console.log("\nStatus:: Starting Database Sync\n");
-      await sequelize.sync({ force: true });
-      console.log("Status:: Database Synced");
-      await seedData();
+      try {
+        await testConnection();
+        console.log("\nStatus:: Starting Database Sync\n");
+        await sequelize.sync({ force: true });
+        console.log("Status:: Database Synced");
+        await seedData();
+      } catch (error) {
+        console.error(error);
+      }
       console.log("\nStatus:: Starting Server")
       httpServer.listen(PORT, () => {
         console.log(`Status:: Server is running on port ${PORT}`);

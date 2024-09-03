@@ -2,34 +2,34 @@ import { User }  from "../models/index.js";
 
 const userData = [
     {
-        "username": "user1",
         "email": "user1@example.com",
-        "password": "user1password"
+        "password": "password",
+        "username": "user1"
     },
     {
-        "username": "user2",
         "email": "user2@example.com",
-        "password": "user2password"
+        "password": "password",
+        "username": "user2"
     },
     {
-        "username": "user3",
         "email": "user3@example.com",
-        "password": "user3password"
+        "password": "password",
+        "username": "user3"
     },
     {
-        "username": "user4",
         "email": "user4@example.com",
-        "password": "user4password"
+        "password": "password",
+        "username": "user4"
     },
     {
-        "username": "user5",
         "email": "user5@example.com",
-        "password": "user5password"
+        "password": "password",
+        "username": "user5"
     },
     {
-        "username": "user6",
         "email": "user6@example.com",
-        "password": "user6password"
+        "password": "password",
+        "username": "user6"
     }
 ]
 
